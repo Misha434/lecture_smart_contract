@@ -2,13 +2,27 @@
 
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts@4.6.0/token/ERC721/ERC721.sol";
 
-contract MyNFT is ERC721 {
+contract OnlyOwnerMint is ERC721 {
     
-    constructor() ERC721("MyNFT", "MYNFT"){}
+    /**
+    * @dev
+    * - このコントラクトをデプロイしたアドレス用変数 owner
+    */
+    address public owner;
 
-    function nftMnt(address to, uint256 tokenId) public {
-        _mint(to, tokenId);
+    constructor() ERC721("OnlyOwnerMint", "OWNER"){
+        owner = _msgSender();
+    }
+
+    /**
+    * @dev
+    * - このコントラクトをデプロイしたアドレスだけがmint可能 require
+    * - nftMint関数の実行アドレスにtokenIdを紐付け
+    */
+    function nftMnt(uint256 tokenId) public {
+        require(owner == _msgSender(), "Caller is not the owner");
+        _mint(_msgSender(), tokenId);
     }
 }
